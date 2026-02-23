@@ -1,4 +1,6 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
 import { Badge } from "@/components/ui/badge";
 import { Property } from "@/lib/api";
 import { MapPin, DollarSign } from "lucide-react"; // install lucide-react if not already: npm i lucide-react
