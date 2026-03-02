@@ -59,8 +59,16 @@ router.post('/login', async (req: Request, res: Response) => {
 
     const token = generateToken(user);
 
+    res.cookie('adminToken', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000, // 1 hour
+    });
+
     res.json({
       token,
+      message: 'Login successful',
       user: { id: user._id, email: user.email, name: user.name, role: user.role },
     });
   } catch (err: any) {

@@ -7,6 +7,7 @@ export interface IUser extends Document {
   name?: string;
   role: 'admin' | 'user';
   createdAt: Date;
+  updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -37,21 +38,27 @@ const userSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-// Hash password before save
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+// Modern pre-save hook (Mongoose 9+ style) — NO next() parameter
+userSchema.pre('save', async function () {
+  // 'this' is correctly typed as HydratedDocument<IUser>
+  if (!this.isModified('password')) {
+    return; // No next() needed — just return to continue
+  }
 
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (err: any) {
-    next(err);
+    // No next() call — the promise resolution lets Mongoose proceed
+  } catch (err) {
+    // If you throw here, Mongoose will reject the save operation
+    throw err;
   }
 });
 
-// Method to compare password
-userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
+// Method remains the same
+userSchema.methods.comparePassword = async function (
+  candidatePassword: string
+): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
 };
 

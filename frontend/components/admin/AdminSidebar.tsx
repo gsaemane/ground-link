@@ -5,7 +5,7 @@ import { Home, Building2, List, PlusCircle, Settings, LogOut } from "lucide-reac
 
 const menuItems = [
   { title: "Dashboard", url: "/admin/dashboard", icon: Home },
-  { title: "Properties", url: "/admin/properties", icon: Building2 },
+  { title: "Properties", url: "/admin/properties/all", icon: Building2 },
   { title: "Add New", url: "/admin/properties/new", icon: PlusCircle },
   { title: "Settings", url: "/admin/settings", icon: Settings },
 ];

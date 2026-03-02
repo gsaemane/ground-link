@@ -5,7 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import upload from './multerConfig.js';
-import Property from './models/Property.js';
+import Property, { IProperty } from './models/Property.js';  // ← added { IProperty }
 import authRouter from './routes/auth.js';
 import { authenticate, authorizeAdmin } from './middleware/auth.js';
 
@@ -15,11 +15,34 @@ const __dirname = path.dirname(__filename);
 const app: Express = express();
 const PORT = process.env.PORT || 4000;
 
-// ... rest of your middleware, cors, static, mongoose.connect ...
+// Middleware
+app.use(cors({
+  origin: (origin, callback) => {
+    const allowed = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
+    if (!origin || allowed.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+app.use(express.json());
+
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI!)
+  .then(() => console.log('→ MongoDB connected'))
+  .catch(err => {
+    console.error('MongoDB connection failed:', err.message);
+    process.exit(1);
+  });
 
 app.use('/api/auth', authRouter);
 
-//GET all properties
+// GET all properties (public)
 app.get('/api/properties', async (req: Request, res: Response) => {
   try {
     const properties = await Property.find().sort({ createdAt: -1 }).lean();
@@ -29,7 +52,7 @@ app.get('/api/properties', async (req: Request, res: Response) => {
   }
 });
 
-// GET single property
+// GET single property (public)
 app.get('/api/properties/:id', async (req: Request, res: Response) => {
   try {
     const property = await Property.findById(req.params.id).lean();
@@ -40,9 +63,8 @@ app.get('/api/properties/:id', async (req: Request, res: Response) => {
   }
 });
 
-
-// POST new property
-app.post('/api/properties', upload.single('image'), async (req: Request, res: Response) => {
+// POST new property (protected)
+app.post('/api/properties', authenticate, authorizeAdmin, upload.single('image'), async (req: Request, res: Response) => {
   try {
     const { title, description, price, type, featured, location } = req.body;
 
@@ -72,37 +94,28 @@ app.post('/api/properties', upload.single('image'), async (req: Request, res: Re
   }
 });
 
-// PUT update property
-app.put('/api/properties/:id', upload.single('image'), async (req: Request, res: Response) => {
+// PUT update property (protected)
+app.put('/api/properties/:id', authenticate, authorizeAdmin, upload.single('image'), async (req: Request, res: Response) => {
   try {
     const { title, description, price, type, featured, location } = req.body;
 
-    // Find the property first
     const property = await Property.findById(req.params.id);
     if (!property) {
       return res.status(404).json({ error: 'Property not found' });
     }
 
-    // Update fields only if provided in request
     if (title !== undefined) property.title = title.trim();
     if (description !== undefined) property.description = description.trim() || undefined;
     if (price !== undefined) property.price = Number(price);
-    if (type !== undefined) {
-      property.type = type.toLowerCase().trim();
-      // Optional: you can add validation here if you want to enforce enum
-    }
+    if (type !== undefined) property.type = type.toLowerCase().trim();
     if (featured !== undefined) property.featured = featured === 'true' || featured === true;
     if (location !== undefined) property.location = location.trim() || 'Honiara';
 
-    // Handle image replacement (optional)
     if (req.file) {
-      // You could delete old image here if you want (requires fs.unlink)
       property.image = `/uploads/${req.file.filename}`;
     }
 
-    // Save updated document
     const updatedProperty = await property.save();
-
     res.status(200).json(updatedProperty);
   } catch (err: any) {
     console.error('Update error:', err);
@@ -110,8 +123,8 @@ app.put('/api/properties/:id', upload.single('image'), async (req: Request, res:
   }
 });
 
-// DELETE /api/properties/:id
-app.delete('/api/properties/:id', async (req: Request, res: Response) => {
+// DELETE property (protected)
+app.delete('/api/properties/:id', authenticate, authorizeAdmin, async (req: Request, res: Response) => {
   try {
     const property = await Property.findByIdAndDelete(req.params.id);
 
@@ -119,7 +132,6 @@ app.delete('/api/properties/:id', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Property not found' });
     }
 
-    // Optional: delete image file from disk
     if (property.image) {
       const imagePath = path.join(__dirname, '..', property.image);
       import('fs/promises')
