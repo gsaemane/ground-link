@@ -5,6 +5,7 @@ import PropertyCard from '@/components/PropertyCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Search, Home, Building, LandPlot, MapPin, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function LandingPage() {
   let properties: Property[] = [];
@@ -17,12 +18,14 @@ export default async function LandingPage() {
   const featured = properties.slice(0, 6); // Show top 6 as featured
 
   return (
+
     <div className="flex flex-col min-h-screen bg-background">
+
       {/* Hero Section – Tropical Premium Feel */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60 z-10" />
+          <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/30 to-black/60 z-10" />
           <img
             src="https://images.unsplash.com/photo-1585412727339-54e4bae3bbf9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80"
             alt="Tropical Solomon Islands beachfront property view"
@@ -127,7 +130,10 @@ export default async function LandingPage() {
           {featured.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featured.map((prop) => (
-                <PropertyCard key={prop._id} property={prop} />
+                <Link href={`/properties/${prop._id}`} key={prop._id}>
+                  <PropertyCard key={prop._id} property={prop} />
+                </Link>
+
               ))}
             </div>
           ) : (

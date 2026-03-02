@@ -5,9 +5,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import upload from './multerConfig.js';
-import Property, { IProperty } from './models/Property.js';  // ← added { IProperty }
+import Property, { IProperty } from './models/Property.js';
 import authRouter from './routes/auth.js';
 import { authenticate, authorizeAdmin } from './middleware/auth.js';
+import fs from 'fs/promises';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,9 +65,13 @@ app.get('/api/properties/:id', async (req: Request, res: Response) => {
 });
 
 // POST new property (protected)
-app.post('/api/properties', authenticate, authorizeAdmin, upload.single('image'), async (req: Request, res: Response) => {
+app.post('/api/properties', authenticate, authorizeAdmin, upload.array('images', 10), async (req: Request, res: Response) => {
   try {
-    const { title, description, price, type, featured, location } = req.body;
+    const {
+      title, description, price, type, featured, location, province, address, lat, lng,
+      bedrooms, bathrooms, landArea, buildingArea, status, yearBuilt, features, videoUrl,
+      agentName, agentPhone, agentEmail
+    } = req.body;
 
     if (!title || !price || !type) {
       return res.status(400).json({ error: 'title, price and type are required' });
@@ -74,15 +79,41 @@ app.post('/api/properties', authenticate, authorizeAdmin, upload.single('image')
 
     const propertyData: Partial<IProperty> = {
       title: title.trim(),
-      description: description?.trim(),
+      description: description?.trim() || undefined,
       price: Number(price),
       type: type.toLowerCase().trim(),
       featured: featured === 'true' || featured === true,
-      location: location?.trim() || 'Honiara'
+      location: location?.trim() || 'Honiara',
+      images: []
     };
 
-    if (req.file) {
-      propertyData.image = `/uploads/${req.file.filename}`;
+    // Handle multiple images
+    if (req.files && Array.isArray(req.files)) {
+      propertyData.images = req.files.map(file => `/uploads/${file.filename}`);
+    }
+
+    // Additional fields
+    if (province) propertyData.province = province.trim();
+    if (address) propertyData.address = address.trim();
+    if (lat && lng) {
+      propertyData.coordinates = { lat: Number(lat), lng: Number(lng) };
+    }
+    if (bedrooms) propertyData.bedrooms = Number(bedrooms);
+    if (bathrooms) propertyData.bathrooms = Number(bathrooms);
+    if (landArea) propertyData.landArea = Number(landArea);
+    if (buildingArea) propertyData.buildingArea = Number(buildingArea);
+    if (status) propertyData.status = status.toLowerCase().trim();
+    if (yearBuilt) propertyData.yearBuilt = Number(yearBuilt);
+    if (features) {
+      propertyData.features = features.split(',').map((f: string) => f.trim()).filter(Boolean);
+    }
+    if (videoUrl) propertyData.videoUrl = videoUrl.trim();
+    if (agentName || agentPhone || agentEmail) {
+      propertyData.agent = {
+        name: agentName?.trim() || '',
+        phone: agentPhone?.trim() || '',
+        email: agentEmail?.trim() || '',
+      };
     }
 
     const newProperty = new Property(propertyData);
@@ -95,14 +126,16 @@ app.post('/api/properties', authenticate, authorizeAdmin, upload.single('image')
 });
 
 // PUT update property (protected)
-app.put('/api/properties/:id', authenticate, authorizeAdmin, upload.single('image'), async (req: Request, res: Response) => {
+app.put('/api/properties/:id', authenticate, authorizeAdmin, upload.array('images', 10), async (req: Request, res: Response) => {
   try {
-    const { title, description, price, type, featured, location } = req.body;
+    const {
+      title, description, price, type, featured, location, province, address, lat, lng,
+      bedrooms, bathrooms, landArea, buildingArea, status, yearBuilt, features, videoUrl,
+      agentName, agentPhone, agentEmail, deletedImages
+    } = req.body;
 
     const property = await Property.findById(req.params.id);
-    if (!property) {
-      return res.status(404).json({ error: 'Property not found' });
-    }
+    if (!property) return res.status(404).json({ error: 'Property not found' });
 
     if (title !== undefined) property.title = title.trim();
     if (description !== undefined) property.description = description.trim() || undefined;
@@ -111,15 +144,54 @@ app.put('/api/properties/:id', authenticate, authorizeAdmin, upload.single('imag
     if (featured !== undefined) property.featured = featured === 'true' || featured === true;
     if (location !== undefined) property.location = location.trim() || 'Honiara';
 
-    if (req.file) {
-      property.image = `/uploads/${req.file.filename}`;
+    // Handle additional images
+    if (req.files && Array.isArray(req.files)) {
+      const newImages = req.files.map(file => `/uploads/${file.filename}`);
+      property.images = [...(property.images || []), ...newImages];
+    }
+
+    // Additional fields
+    if (province !== undefined) property.province = province.trim();
+    if (address !== undefined) property.address = address.trim();
+    if (lat !== undefined && lng !== undefined) {
+      property.coordinates = { lat: Number(lat), lng: Number(lng) };
+    }
+    if (bedrooms !== undefined) property.bedrooms = Number(bedrooms);
+    if (bathrooms !== undefined) property.bathrooms = Number(bathrooms);
+    if (landArea !== undefined) property.landArea = Number(landArea);
+    if (buildingArea !== undefined) property.buildingArea = Number(buildingArea);
+    if (status !== undefined) property.status = status.toLowerCase().trim();
+    if (yearBuilt !== undefined) property.yearBuilt = Number(yearBuilt);
+    if (features !== undefined) {
+      property.features = features.split(',').map((f: string) => f.trim()).filter(Boolean);
+    }
+    if (videoUrl !== undefined) property.videoUrl = videoUrl.trim();
+    if (agentName !== undefined || agentPhone !== undefined || agentEmail !== undefined) {
+      property.agent = {
+        name: agentName?.trim() || property.agent?.name || '',
+        phone: agentPhone?.trim() || property.agent?.phone || '',
+        email: agentEmail?.trim() || property.agent?.email || '',
+      };
+    }
+
+    // Handle image deletions
+    if (deletedImages) {
+      const imagesToDelete = deletedImages.split(',').map((img: string) => img.trim());
+
+      for (const imgPath of imagesToDelete) {
+        // Remove from array
+        property.images = property.images?.filter(img => img !== imgPath) || [];
+
+        // Delete file from disk
+        const fullPath = path.join(__dirname, '../', imgPath);
+        await fs.unlink(fullPath).catch(err => console.warn('Failed to delete image:', err));
+      }
     }
 
     const updatedProperty = await property.save();
     res.status(200).json(updatedProperty);
   } catch (err: any) {
-    console.error('Update error:', err);
-    res.status(500).json({ error: err.message || 'Server error during update' });
+    res.status(500).json({ error: err.message });
   }
 });
 

@@ -9,11 +9,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 
 export default function NewPropertyPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -24,24 +26,38 @@ export default function NewPropertyPage() {
     location: 'Honiara',
     province: 'Guadalcanal',
     address: '',
+    lat: '',
+    lng: '',
     bedrooms: '',
     bathrooms: '',
     landArea: '',
     buildingArea: '',
     status: 'for-sale',
     yearBuilt: '',
-    features: '', // We'll split this string into an array on submit
+    features: '',
     videoUrl: '',
     agentName: '',
     agentPhone: '',
     agentEmail: '',
-    lat: '',
-    lng: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSwitch = (checked: boolean) => {
+    setFormData(prev => ({ ...prev, featured: checked }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setImageFiles(Array.from(e.target.files));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,51 +66,21 @@ export default function NewPropertyPage() {
 
     const data = new FormData();
 
-    // 1. Append simple strings and numbers
-    data.append('title', formData.title);
-    data.append('price', formData.price); // Backend should cast to Number
-    data.append('type', formData.type);
-    data.append('status', formData.status);
-    data.append('description', formData.description);
-    data.append('location', formData.location);
-    data.append('province', formData.province);
-    data.append('address', formData.address);
-    data.append('featured', String(formData.featured));
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== '' && value !== undefined) {
+        data.append(key, value.toString());
+      }
+    });
 
-    // 2. Handle optional numeric fields (ensure they aren't empty strings)
-    if (formData.bedrooms) data.append('bedrooms', formData.bedrooms);
-    if (formData.bathrooms) data.append('bathrooms', formData.bathrooms);
-    if (formData.landArea) data.append('landArea', formData.landArea);
-    if (formData.buildingArea) data.append('buildingArea', formData.buildingArea);
-    if (formData.yearBuilt) data.append('yearBuilt', formData.yearBuilt);
-
-    // 3. Nested Objects (Send as JSON strings)
-    data.append('coordinates', JSON.stringify({
-      lat: formData.lat ? Number(formData.lat) : undefined,
-      lng: formData.lng ? Number(formData.lng) : undefined,
-    }));
-
-    data.append('agent', JSON.stringify({
-      name: formData.agentName,
-      phone: formData.agentPhone,
-      email: formData.agentEmail,
-    }));
-
-    // 4. Arrays
-    const featuresArray = formData.features.split(',').map(f => f.trim()).filter(Boolean);
-    data.append('features', JSON.stringify(featuresArray));
-
-    // 5. Images
-    const fileInput = document.getElementById('image-upload') as HTMLInputElement;
-    if (fileInput?.files) {
-      Array.from(fileInput.files).forEach(file => data.append('images', file));
-    }
+    // Multiple images
+    imageFiles.forEach(file => {
+      data.append('images', file);
+    });
 
     try {
       await createProperty(data);
-      toast.success('Property created successfully');
+      toast.success('Property created successfully!');
       router.push('/admin/properties/all');
-      router.refresh();
     } catch (err: any) {
       toast.error(err.message || 'Failed to create property');
     } finally {
@@ -103,118 +89,142 @@ export default function NewPropertyPage() {
   };
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 px-4 max-w-5xl">
       <h1 className="text-3xl font-bold mb-8">Add New Property</h1>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+      <form onSubmit={handleSubmit} className="space-y-10">
+        <Card>
+          <CardHeader><CardTitle>Basic Information</CardTitle></CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label>Title *</Label>
+              <Input name="title" required value={formData.title} onChange={handleChange} />
+            </div>
+            <div className="space-y-2">
+              <Label>Price (SBD) *</Label>
+              <Input name="price" type="number" required value={formData.price} onChange={handleChange} />
+            </div>
+            <div className="space-y-2">
+              <Label>Type *</Label>
+              <Select value={formData.type} onValueChange={(v) => handleSelectChange('type', v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="house">House</SelectItem>
+                  <SelectItem value="land">Land</SelectItem>
+                  <SelectItem value="apartment">Apartment</SelectItem>
+                  <SelectItem value="condo">Condo</SelectItem>
+                  <SelectItem value="commercial">Commercial</SelectItem>
+                  <SelectItem value="villa">Villa</SelectItem>
+                  <SelectItem value="beachfront">Beachfront</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Status *</Label>
+              <Select value={formData.status} onValueChange={(v) => handleSelectChange('status', v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="for-sale">For Sale</SelectItem>
+                  <SelectItem value="for-rent">For Rent</SelectItem>
+                  <SelectItem value="sold">Sold</SelectItem>
+                  <SelectItem value="rented">Rented</SelectItem>
+                  <SelectItem value="under-offer">Under Offer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* Basic Info */}
-        <div className="space-y-2">
-          <Label htmlFor="title">Title *</Label>
-          <Input id="title" name="title" required onChange={handleChange} />
+        <Card>
+          <CardHeader><CardTitle>Description</CardTitle></CardHeader>
+          <CardContent>
+            <Textarea name="description" rows={6} value={formData.description} onChange={handleChange} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Location</CardTitle></CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label>Location</Label>
+              <Input name="location" value={formData.location} onChange={handleChange} />
+            </div>
+            <div className="space-y-2">
+              <Label>Province</Label>
+              <Input name="province" value={formData.province} onChange={handleChange} />
+            </div>
+            <div className="md:col-span-2 space-y-2">
+              <Label>Full Address</Label>
+              <Input name="address" value={formData.address} onChange={handleChange} />
+            </div>
+            <div className="space-y-2">
+              <Label>Latitude</Label>
+              <Input name="lat" type="number" step="any" value={formData.lat} onChange={handleChange} />
+            </div>
+            <div className="space-y-2">
+              <Label>Longitude</Label>
+              <Input name="lng" type="number" step="any" value={formData.lng} onChange={handleChange} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Specs</CardTitle></CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2"><Label>Bedrooms</Label><Input name="bedrooms" type="number" value={formData.bedrooms} onChange={handleChange} /></div>
+            <div className="space-y-2"><Label>Bathrooms</Label><Input name="bathrooms" type="number" value={formData.bathrooms} onChange={handleChange} /></div>
+            <div className="space-y-2"><Label>Land Area (sqm)</Label><Input name="landArea" type="number" value={formData.landArea} onChange={handleChange} /></div>
+            <div className="space-y-2"><Label>Building Area (sqm)</Label><Input name="buildingArea" type="number" value={formData.buildingArea} onChange={handleChange} /></div>
+            <div className="space-y-2"><Label>Year Built</Label><Input name="yearBuilt" type="number" value={formData.yearBuilt} onChange={handleChange} /></div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Features & Media</CardTitle></CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label>Features (comma separated)</Label>
+              <Input name="features" value={formData.features} onChange={handleChange} placeholder="ocean view, generator, solar" />
+            </div>
+            <div className="space-y-2">
+              <Label>Video URL</Label>
+              <Input name="videoUrl" value={formData.videoUrl} onChange={handleChange} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Agent Info</CardTitle></CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2"><Label>Agent Name</Label><Input name="agentName" value={formData.agentName} onChange={handleChange} /></div>
+            <div className="space-y-2"><Label>Agent Phone</Label><Input name="agentPhone" value={formData.agentPhone} onChange={handleChange} /></div>
+            <div className="space-y-2"><Label>Agent Email</Label><Input name="agentEmail" value={formData.agentEmail} onChange={handleChange} /></div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Images (Multiple)</CardTitle></CardHeader>
+          <CardContent>
+            <Input type="file" multiple accept="image/*" onChange={handleImageChange} />
+            <p className="text-xs text-muted-foreground mt-2">You can select up to 10 images</p>
+            {imageFiles.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {imageFiles.map((file, i) => (
+                  <div key={i} className="text-xs bg-muted px-3 py-1 rounded">{file.name}</div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <div className="flex items-center gap-3">
+          <Switch checked={formData.featured} onCheckedChange={handleSwitch} />
+          <Label>Featured Property</Label>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="price">Price (SBD) *</Label>
-          <Input id="price" name="price" type="number" required onChange={handleChange} />
-        </div>
-
-        {/* Selects */}
-        <div className="space-y-2">
-          <Label htmlFor="type">Type *</Label>
-          <Select onValueChange={v => setFormData(p => ({ ...p, type: v }))} defaultValue="house">
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {['house', 'land', 'apartment', 'condo', 'commercial', 'villa', 'beachfront', 'other'].map(t => (
-                <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="status">Status *</Label>
-          <Select onValueChange={v => setFormData(p => ({ ...p, status: v as any }))} defaultValue="for-sale">
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {['for-sale', 'for-rent', 'sold', 'rented', 'under-offer', 'withdrawn'].map(s => (
-                <SelectItem key={s} value={s}>{s.replace('-', ' ').toUpperCase()}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Location Section */}
-        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 border-y py-4 my-2">
-          <div className="space-y-2">
-            <Label>Province</Label>
-            <Input name="province" defaultValue="Guadalcanal" onChange={handleChange} />
-          </div>
-          <div className="space-y-2">
-            <Label>Location (City/Area)</Label>
-            <Input name="location" defaultValue="Honiara" onChange={handleChange} />
-          </div>
-          <div className="space-y-2">
-            <Label>Address</Label>
-            <Input name="address" onChange={handleChange} />
-          </div>
-        </div>
-
-        {/* Details */}
-        <div className="space-y-2">
-          <Label>Bedrooms</Label>
-          <Input name="bedrooms" type="number" onChange={handleChange} />
-        </div>
-        <div className="space-y-2">
-          <Label>Bathrooms</Label>
-          <Input name="bathrooms" type="number" onChange={handleChange} />
-        </div>
-        <div className="space-y-2">
-          <Label>Land Area (sqm)</Label>
-          <Input name="landArea" type="number" onChange={handleChange} />
-        </div>
-        <div className="space-y-2">
-          <Label>Building Area (sqm)</Label>
-          <Input name="buildingArea" type="number" onChange={handleChange} />
-        </div>
-
-        {/* Media & Features */}
-        <div className="md:col-span-2 space-y-2">
-          <Label>Features (comma separated)</Label>
-          <Input name="features" placeholder="Pool, Fenced, Solar, Aircon" onChange={handleChange} />
-        </div>
-
-        <div className="md:col-span-2 space-y-2">
-          <Label>Images</Label>
-          <Input id="image-upload" type="file" multiple accept="image/*" />
-        </div>
-
-        {/* Agent Info */}
-        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 bg-muted p-4 rounded-lg">
-          <div className="space-y-2">
-            <Label>Agent Name</Label>
-            <Input name="agentName" onChange={handleChange} />
-          </div>
-          <div className="space-y-2">
-            <Label>Agent Phone</Label>
-            <Input name="agentPhone" onChange={handleChange} />
-          </div>
-          <div className="space-y-2">
-            <Label>Agent Email</Label>
-            <Input name="agentEmail" type="email" onChange={handleChange} />
-          </div>
-        </div>
-
-        <div className="md:col-span-2 flex items-center space-x-2">
-          <Switch id="featured" checked={formData.featured} onCheckedChange={(v) => setFormData(p => ({ ...p, featured: v }))} />
-          <Label htmlFor="featured">Mark as Featured Property</Label>
-        </div>
-
-        <div className="md:col-span-2 pt-4">
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? 'Creating...' : 'Create Property'}
-          </Button>
-        </div>
+        <Button type="submit" disabled={loading} size="lg" className="w-full">
+          {loading ? 'Creating Property...' : 'Create Property'}
+        </Button>
       </form>
     </div>
   );

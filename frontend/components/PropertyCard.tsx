@@ -15,7 +15,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
   return (
     <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group">
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-4/3 overflow-hidden">
         <img
           src={`${API_BASE}${mainImage}`}
           alt={property.title}

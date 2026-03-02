@@ -2,14 +2,16 @@ import { fetchProperties, Property } from "@/lib/api";
 import PropertyCard from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export default async function Home() {
   const properties = await fetchProperties();
 
   return (
     <div className="flex flex-col min-h-screen">
+     
       {/* Hero Section – modern, full-bleed */}
-      <section className="relative bg-linear-to-br from-slate-900 to-slate-800 text-white py-32 px-6 md:px-12 lg:px-24 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-slate-900 to-slate-800 text-white py-32 px-6 md:px-12 lg:px-24 overflow-hidden">
         <div className="absolute inset-0 opacity-20 bg-[url('/hero-bg-pattern.svg')] bg-cover" />
         <div className="relative container mx-auto max-w-7xl text-center">
           <Badge variant="outline" className="mb-6 border-white/40 text-white/90 uppercase tracking-wider">
@@ -40,7 +42,9 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {properties.slice(0, 6).map((prop: Property) => (
-              <PropertyCard key={prop._id} property={prop} />
+              <Link href={`/properties/${prop._id}`} key={prop._id}>
+                <PropertyCard property={prop} />
+              </Link>
             ))}
           </div>
         </div>
@@ -48,7 +52,7 @@ export default async function Home() {
 
       {/* Footer – simple modern */}
       <footer className="mt-auto border-t bg-background py-12 px-6 text-center text-muted-foreground">
-        <p>© {new Date().getFullYear()} Geolynx Real Estate. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Ground Link Real Estate. All rights reserved.</p>
       </footer>
     </div>
   );
