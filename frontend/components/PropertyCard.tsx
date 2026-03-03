@@ -13,6 +13,8 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
   const mainImage = property.image || property.images?.[0] || "/placeholder-property.jpg";
 
+  const isLand = property.type.toLowerCase() === 'land';
+
   return (
     <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group">
       <div className="relative aspect-4/3 overflow-hidden">
@@ -22,7 +24,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
         />
         {property.featured && (
-          <Badge className="absolute top-4 left-4 bg-primary">Featured</Badge>
+          <Badge className="absolute top-4 left-4 bg-primary"> {property.type.toLocaleUpperCase()}</Badge>
         )}
         <Badge variant="secondary" className="absolute top-4 right-4 capitalize">
           {property.status.replace('-', ' ')}
@@ -50,13 +52,13 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         </div>
 
         <div className="grid grid-cols-3 gap-2 text-sm text-muted-foreground">
-          {property.bedrooms !== undefined && (
+          {!isLand && property.bedrooms !== undefined && (
             <div className="flex items-center">
               <Bed className="h-4 w-4 mr-1" />
               {property.bedrooms} beds
             </div>
           )}
-          {property.bathrooms !== undefined && (
+          {!isLand && property.bathrooms !== undefined && (
             <div className="flex items-center">
               <Bath className="h-4 w-4 mr-1" />
               {property.bathrooms} baths

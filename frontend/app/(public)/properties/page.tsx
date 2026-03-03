@@ -69,7 +69,7 @@ export default async function PropertiesListingPage({
           <Badge className="bg-primary text-white rounded-md px-3 py-1 mb-6 border-none uppercase text-[10px] tracking-widest animate-in fade-in slide-in-from-top-4 duration-1000">
             Full Portfolio
           </Badge>
-          <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 text-white uppercase italic drop-shadow-2xl">
+          <h1 className="text-5xl md:text-7xl  font-bold mb-6 text-white  drop-shadow-2xl">
             Prime <span className="text-primary">Listings</span><span className="text-white">.</span>
           </h1>
           <p className="text-xl text-slate-300 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-lg">

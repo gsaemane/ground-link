@@ -23,12 +23,12 @@ export default function ContactPage() {
             {/* 1. Header Section */}
             <section className="relative pt-40 pb-24 overflow-hidden">
                 {/* The Gradient Overlay: Black to Transparent to White */}
-                <div className="absolute inset-0 z-0 bg-gradient-to-b from-black via-black/80 to-background" />
+                <div className="absolute inset-0 z-0 bg-linear-to-b from-black via-black/80 to-background opacity-50" />
 
                 {/* Optional: Subtle background texture or image */}
-                <div className="absolute inset-0 z-[-1] opacity-20">
+                <div className="absolute inset-0 z-[-1] opacity-30">
                     <img
-                        src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
+                        src="https://images.pexels.com/photos/8293778/pexels-photo-8293778.jpeg"
                         className="w-full h-full object-cover grayscale"
                         alt="Contact background"
                     />
@@ -38,7 +38,7 @@ export default function ContactPage() {
                     <Badge className="bg-primary text-white mb-6 rounded-none px-4 py-1 uppercase tracking-[0.2em] animate-in fade-in slide-in-from-top-4 duration-1000">
                         Contact Us
                     </Badge>
-                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 text-white uppercase italic">
+                    <h1 className="text-4xl md:text-7xl font-black mb-6 text-white ">
                         Let's <span className="text-primary">Connect.</span>
                     </h1>
                     <p className="text-xl text-slate-300 max-w-2xl mx-auto font-light leading-relaxed">

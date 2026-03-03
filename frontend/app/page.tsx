@@ -37,9 +37,7 @@ export default async function LandingPage() {
 
         {/* Content */}
         <div className="relative z-20 container mx-auto px-6 md:px-12 lg:px-24 text-center text-white max-w-5xl">
-          <Badge variant="outline" className="mb-6 px-6 py-2 text-base border-white/40 bg-black/30 backdrop-blur-sm">
-            Premium Properties in the Solomon Islands
-          </Badge>
+          
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight mb-8 drop-shadow-2xl">
             Find Your <span className="text-primary">Perfect Place</span><br />
@@ -47,23 +45,10 @@ export default async function LandingPage() {
           </h1>
 
           <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-12 drop-shadow-lg">
-            Discover exclusive houses, land, beachfront lots, and investment opportunities across Honiara and the islands — guided by local expertise.
+            Premium Properties in the Solomon Islands
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
-            <Link href="/properties">
-              <Button size="lg" className="text-lg px-10 py-7 cursor-pointer rounded-full shadow-xl bg-primary hover:bg-primary/90">
-                Browse All Properties
-              </Button>
-            </Link>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-lg px-10 py-7 rounded-full border-2 border-white text-white hover:bg-white/20 backdrop-blur-sm"
-            >
-              Contact Our Team
-            </Button>
-          </div>
+        
         </div>
       </section>
 
