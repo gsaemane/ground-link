@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Search, Home, Building, LandPlot, MapPin, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import Header from '@/components/Header';
+import HeroSearch from '@/components/HeroSearch';
 
 export default async function LandingPage() {
   let properties: Property[] = [];
@@ -20,7 +22,7 @@ export default async function LandingPage() {
   return (
 
     <div className="flex flex-col min-h-screen bg-background">
-
+      <Header />
       {/* Hero Section – Tropical Premium Feel */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         {/* Background Image with Overlay */}
@@ -49,9 +51,11 @@ export default async function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
-            <Button size="lg" className="text-lg px-10 py-7 rounded-full shadow-xl bg-primary hover:bg-primary/90">
-              Browse All Properties
-            </Button>
+            <Link href="/properties">
+              <Button size="lg" className="text-lg px-10 py-7 cursor-pointer rounded-full shadow-xl bg-primary hover:bg-primary/90">
+                Browse All Properties
+              </Button>
+            </Link>
             <Button
               size="lg"
               variant="outline"
@@ -65,51 +69,7 @@ export default async function LandingPage() {
 
       {/* Quick Search Bar (optional enhancement) */}
       <section className="relative z-30 -mt-16 container mx-auto px-6 max-w-5xl">
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 md:p-10 border border-border/50">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Property Type</label>
-              <div className="relative">
-                <select className="w-full h-12 pl-10 pr-4 border rounded-lg appearance-none bg-background">
-                  <option>All Types</option>
-                  <option>House</option>
-                  <option>Land</option>
-                  <option>Apartment</option>
-                  <option>Commercial</option>
-                </select>
-                <Home className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Location</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Honiara, Guadalcanal..."
-                  className="w-full h-12 pl-10 pr-4 border rounded-lg"
-                />
-                <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Price Range</label>
-              <select className="w-full h-12 px-4 border rounded-lg appearance-none bg-background">
-                <option>Any Price</option>
-                <option>Under SBD 500,000</option>
-                <option>SBD 500,000 – 1M</option>
-                <option>Over SBD 1M</option>
-              </select>
-            </div>
-
-            <div className="flex items-end">
-              <Button className="w-full h-12 text-lg">
-                <Search className="mr-2 h-5 w-5" /> Search
-              </Button>
-            </div>
-          </div>
-        </div>
+        <HeroSearch />
       </section>
 
       {/* Featured Properties */}
@@ -122,9 +82,11 @@ export default async function LandingPage() {
                 Handpicked selections ready for viewing
               </p>
             </div>
-            <Button variant="outline" size="lg" className="gap-2">
-              View All Properties <ArrowRight className="h-5 w-5" />
-            </Button>
+            <Link href="/properties">
+              <Button variant="outline" size="lg" className="gap-2">
+                View All Properties <ArrowRight className="h-5 w-5" />
+              </Button>
+            </Link>
           </div>
 
           {featured.length > 0 ? (
@@ -154,7 +116,8 @@ export default async function LandingPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {['House', 'Land', 'Apartment', 'Commercial'].map((type) => (
-              <div
+              <Link
+                href={`/types/${type.toLowerCase()}`}
                 key={type}
                 className="group p-8 border rounded-xl hover:border-primary/50 transition-all hover:shadow-lg cursor-pointer bg-card"
               >
@@ -165,8 +128,8 @@ export default async function LandingPage() {
                   {type === 'Commercial' && <MapPin className="h-8 w-8 text-primary" />}
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{type}</h3>
-                <p className="text-sm text-muted-foreground">Discover {type.toLowerCase()} options</p>
-              </div>
+                <p className="text-sm text-muted-foreground">View {type.toLowerCase()} listings</p>
+              </Link>
             ))}
           </div>
         </div>

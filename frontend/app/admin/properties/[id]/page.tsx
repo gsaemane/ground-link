@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Mail, Phone } from 'lucide-react';
 
-const PropertyMap = dynamic(() => import('@/components/property-map'), {
+const PropertyMap = dynamic(() => import('@/components/PropertyMap'), {
   ssr: false,
   loading: () => <Skeleton className="h-full w-full" />,
 });
