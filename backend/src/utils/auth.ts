@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { IUser } from '../models/User.js';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
+
 if (!JWT_SECRET) throw new Error('JWT_SECRET is not set in environment variables');
 
 export interface TokenPayload {
@@ -17,8 +18,9 @@ export const generateToken = (user: IUser): string => {
     role: user.role,
   };
 
+  // Cast the options or the specific variable to string
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '1h',
+    expiresIn: (process.env.JWT_EXPIRES_IN || '1h') as any, 
   });
 };
 
