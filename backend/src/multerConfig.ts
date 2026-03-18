@@ -1,31 +1,40 @@
-import multer from 'multer';
+import { Request } from 'express';
+import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
 
+// Define where and how files are stored
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (
+    req: Request, 
+    file: Express.Multer.File, 
+    cb: (error: Error | null, destination: string) => void
+  ) => {
     cb(null, 'uploads/');
   },
-  filename: (req, file, cb) => {
+  filename: (
+    req: Request, 
+    file: Express.Multer.File, 
+    cb: (error: Error | null, filename: string) => void
+  ) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
 
-const fileFilter: multer.Options['fileFilter'] = (req, file, cb) => {
-  const allowed = /jpeg|jpg|png|webp/;
-  const extname = allowed.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = allowed.test(file.mimetype);
-
-  if (extname && mimetype) {
-    return cb(null, true);
+// Fixes the "implicit any" on the file filter
+const fileFilter = (
+  req: Request, 
+  file: Express.Multer.File, 
+  cb: FileFilterCallback
+) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Not an image! Please upload only images.'));
   }
-  cb(new Error('Only images allowed (jpg, jpeg, png, webp)'));
 };
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 },
-  fileFilter
+export const upload = multer({ 
+  storage: storage,
+  fileFilter: fileFilter 
 });
-
-export default upload;
