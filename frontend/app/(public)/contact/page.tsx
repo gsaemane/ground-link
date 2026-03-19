@@ -28,7 +28,7 @@ export default function ContactPage() {
                 {/* Optional: Subtle background texture or image */}
                 <div className="absolute inset-0 z-[-1] opacity-30">
                     <img
-                        src="https://images.pexels.com/photos/8293778/pexels-photo-8293778.jpeg"
+                        src="https://images.unsplash.com/photo-1577415124269-b911f99c1d68?q=80&w=2070&auto=format&fit=crop"
                         className="w-full h-full object-cover grayscale"
                         alt="Contact background"
                     />

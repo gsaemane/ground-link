@@ -6,6 +6,7 @@ import { put, del } from '@vercel/blob'; // Added 'del' for deleting blobs
 import multer from 'multer';
 import Property, { IProperty } from './models/Property.js';
 import authRouter from './routes/auth.js';
+import heroSlideRouter from './routes/heroSlides.js';
 import { authenticate, authorizeAdmin } from './middleware/auth.js';
 
 
@@ -38,6 +39,7 @@ mongoose.connect(process.env.MONGO_URI!)
   });
 
 app.use('/api/auth', authRouter);
+app.use('/api/hero-slides', heroSlideRouter);
 
 // --- HELPER FUNCTION FOR VERCEL BLOB UPLOAD ---
 const uploadToBlob = async (files: Express.Multer.File[]) => {

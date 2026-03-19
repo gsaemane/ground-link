@@ -3,12 +3,13 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { Home, Building2, Settings, LogOut, MapPin } from "lucide-react";
+import { Home, Building2, Settings, LogOut, MapPin, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
   { title: "Dashboard", url: "/admin", icon: Home },
   { title: "All Properties", url: "/admin/properties/all", icon: Building2 },
+  { title: "Hero Slides", url: "/admin/hero-slides", icon: ImageIcon },
   { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
 

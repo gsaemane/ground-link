@@ -29,8 +29,8 @@ export default function HeroSearch({ initialValues }: SearchProps) {
   };
 
   return (
-    <div className="bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-4 md:p-4 border border-white/40 max-w-5xl mx-auto ring-1 ring-black/5">
-      <div className="flex flex-col md:flex-row items-center divide-y md:divide-y-0 md:divide-x divide-slate-200/60">
+    <div className="bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-2xl p-4 md:p-4 border border-white/40 max-w-5xl mx-auto ring-1 ring-black/5 text-left">
+      <div className="flex flex-col md:flex-row items-center divide-y md:divide-y-0 md:divide-x divide-slate-200/60 text-left">
         
         {/* Location */}
         <div className="flex-1 w-full p-4 hover:bg-slate-50/50 rounded-t-[2rem] md:rounded-l-[2rem] md:rounded-tr-none transition-colors group cursor-pointer">

@@ -20,10 +20,10 @@ export default function Header() {
     }, []);
 
     const navLinks = [
-      { name: 'Home', href: '/' },
-      { name: 'Properties', href: '/properties' },
-      { name: 'About', href: '/about' },
-      { name: 'Contact', href: '/contact' },
+
+        { name: 'Properties', href: '/properties' },
+        { name: 'About', href: '/about' },
+        { name: 'Contact', href: '/contact' },
     ];
 
     return (
@@ -43,22 +43,22 @@ export default function Header() {
             >
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-3 group focus:outline-none">
-                  <div className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-sm",
-                      isScrolled ? "bg-black" : "bg-white/20 backdrop-blur-sm"
-                  )}>
-                    <MapPin className={cn("w-5 h-5", isScrolled ? "text-white" : "text-white")} />
-                  </div>
-                  <div>
-                    <span className={cn(
-                        "font-extrabold text-2xl tracking-tighter transition-colors",
-                        isScrolled ? "text-slate-900 group-hover:text-black" : "text-white"
-                    )}>Ground Link</span>
-                    <p className={cn(
-                        "text-[10px] uppercase font-bold tracking-[0.2em] -mt-0.5",
-                        isScrolled ? "text-slate-500" : "text-white/70"
-                    )}>Solomon Islands</p>
-                  </div>
+                    <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-sm",
+                        isScrolled ? "bg-black" : "bg-white/20 backdrop-blur-sm"
+                    )}>
+                        <MapPin className={cn("w-5 h-5", isScrolled ? "text-white" : "text-white")} />
+                    </div>
+                    <div>
+                        <span className={cn(
+                            "font-extrabold text-2xl tracking-tighter transition-colors",
+                            isScrolled ? "text-slate-900 group-hover:text-black" : "text-white"
+                        )}>Ground Link</span>
+                        <p className={cn(
+                            "text-[10px] uppercase font-bold tracking-[0.2em] -mt-0.5",
+                            isScrolled ? "text-slate-500" : "text-white/70"
+                        )}>Solomon Islands</p>
+                    </div>
                 </Link>
 
                 {/* Desktop Navigation */}
@@ -88,33 +88,29 @@ export default function Header() {
                         <SheetContent side="right" className="w-full sm:w-96 p-0 sm:p-6 bg-white/95 backdrop-blur-xl border-none">
                             <div className="p-6 h-full flex flex-col">
                                 <div className="flex flex-col gap-6 mt-12">
-                                  {navLinks.map((link) => (
-                                    <Link
-                                      key={link.name}
-                                      href={link.href}
-                                      className="text-4xl font-extrabold tracking-tight text-slate-900 hover:text-primary transition-colors"
-                                      onClick={() => setIsOpen(false)}
-                                    >
-                                      {link.name}
-                                    </Link>
-                                  ))}
+                                    {navLinks.map((link) => (
+                                        <Link
+                                            key={link.name}
+                                            href={link.href}
+                                            className="text-4xl font-extrabold tracking-tight text-slate-900 hover:text-primary transition-colors"
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            {link.name}
+                                        </Link>
+                                    ))}
                                 </div>
                                 <div className="mt-auto pt-8 border-t border-slate-100 flex flex-col gap-4 pb-12 sm:pb-0">
-                                  <Button className="w-full text-lg py-6 rounded-2xl gap-2 font-bold shadow-sm" asChild>
-                                    <Link href="/sell" onClick={() => setIsOpen(false)}>
-                                      List Your Property <ArrowRight className="w-5 h-5" />
-                                    </Link>
-                                  </Button>
-                                  <Button variant="outline" className="w-full text-lg py-6 rounded-2xl font-bold border-slate-200 text-slate-700 hover:bg-slate-50 gap-3" asChild>
-                                    <Link href="/login" onClick={() => setIsOpen(false)}>
-                                      <UserIcon className="w-5 h-5" /> Sign In
-                                    </Link>
-                                  </Button>
+                                    <Button className="w-full text-lg py-6 rounded-2xl gap-2 font-bold shadow-sm" asChild>
+                                        <Link href="/sell" onClick={() => setIsOpen(false)}>
+                                            List Your Property <ArrowRight className="w-5 h-5" />
+                                        </Link>
+                                    </Button>
+
                                 </div>
                             </div>
                         </SheetContent>
                     </Sheet>
-                    
+
                     <div className="hidden md:flex items-center gap-4">
                         <Button variant="ghost" className={cn(
                             "font-bold rounded-full px-6 transition-colors",

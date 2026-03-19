@@ -10,7 +10,6 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
-    { name: 'Home', href: '/' },
     { name: 'Properties', href: '/properties' },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
@@ -46,9 +45,7 @@ export default function Navbar() {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="ghost" className="font-bold text-slate-600 hover:text-black hover:bg-slate-100 rounded-full px-6" asChild>
-              <Link href="/login">Sign In</Link>
-            </Button>
+
             <Button className="font-bold rounded-full px-6 shadow-xs gap-2 group" asChild>
               <Link href="/sell">
                 List Property <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

@@ -136,3 +136,56 @@ export async function deleteProperty(id: string): Promise<{ message: string }> {
   if (!res.ok) throw new Error('Failed to delete property');
   return res.json();
 }
+
+// ================= HERO SLIDES API =================
+
+import { HeroSlideData } from '@/components/HeroSlider';
+
+export async function fetchHeroSlides(): Promise<HeroSlideData[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/hero-slides`, { next: { revalidate: 10 } });
+    if (!res.ok) throw new Error('Failed to fetch hero slides');
+    return res.json();
+  } catch (error) {
+    console.error('Failed to fetch hero slides:', error);
+    return []; // Return empty array to ensure fallbacks work instead of crashing
+  }
+}
+
+export async function createHeroSlide(formData: FormData): Promise<HeroSlideData> {
+  const token = process.env.NEXT_PUBLIC_AUTH_TOKEN;
+  if (!token) throw new Error('Unauthorized');
+
+  const res = await fetch(`${API_BASE}/api/hero-slides`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` },
+    body: formData,
+  });
+  if (!res.ok) throw new Error('Failed to create hero slide');
+  return res.json();
+}
+
+export async function updateHeroSlide(id: string, formData: FormData): Promise<HeroSlideData> {
+  const token = process.env.NEXT_PUBLIC_AUTH_TOKEN;
+  if (!token) throw new Error('Unauthorized');
+
+  const res = await fetch(`${API_BASE}/api/hero-slides/${id}`, {
+    method: 'PUT',
+    headers: { 'Authorization': `Bearer ${token}` },
+    body: formData,
+  });
+  if (!res.ok) throw new Error('Failed to update hero slide');
+  return res.json();
+}
+
+export async function deleteHeroSlide(id: string): Promise<{ message: string }> {
+  const token = process.env.NEXT_PUBLIC_AUTH_TOKEN;
+  if (!token) throw new Error('Unauthorized');
+
+  const res = await fetch(`${API_BASE}/api/hero-slides/${id}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('Failed to delete hero slide');
+  return res.json();
+}
