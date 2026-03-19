@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { fetchProperty, updateProperty, Property } from '@/lib/api';
+import { fetchProperty, updateProperty, Property, getImageUrl } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -54,7 +54,7 @@ export default function EditPropertyPage() {
     const loadProperty = async () => {
       try {
         const data: Property = await fetchProperty(id);
-
+        console.log("Fetched property data:", data);
         setFormData({
           title: data.title,
           description: data.description || '',
@@ -274,7 +274,7 @@ export default function EditPropertyPage() {
                 {existingImages.map((img, i) => (
                   <div key={i} className="relative aspect-square rounded-lg overflow-hidden border shadow-sm">
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_API_URL}${img}`}
+                      src={getImageUrl(img)}
                       alt={`Property image ${i + 1}`}
                       fill
                       className="object-cover"

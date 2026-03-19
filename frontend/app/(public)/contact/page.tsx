@@ -188,9 +188,14 @@ export default function ContactPage() {
                 </div>
             </section>
 
-            {/* Simple Footer */}
-            <footer className="py-12 border-t text-center text-muted-foreground text-sm">
-                <p>© {new Date().getFullYear()} Ground Link Ltd. Solomon Islands.</p>
+            {/* Minimal Footer */}
+            <footer className="bg-white py-12 px-6 border-t border-slate-100 mt-auto">
+                <div className="container mx-auto max-w-5xl text-center">
+                    <p className="text-lg font-bold text-slate-900 tracking-tight mb-2">Ground Link</p>
+                    <p className="text-sm font-medium text-slate-500">
+                      © {new Date().getFullYear()} Ground Link. All rights reserved. • Honiara, Solomon Islands
+                    </p>
+                </div>
             </footer>
         </div>
     );

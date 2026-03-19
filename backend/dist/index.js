@@ -4,7 +4,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
-import upload from './multerConfig.js';
+import { upload } from './multerConfig.js';
 import Property from './models/Property.js';
 import authRouter from './routes/auth.js';
 import { authenticate, authorizeAdmin } from './middleware/auth.js';
@@ -215,6 +215,15 @@ app.delete('/api/properties/:id', authenticate, authorizeAdmin, async (req, res)
         console.error('Delete error:', err);
         res.status(500).json({ error: err.message || 'Server error during deletion' });
     }
+});
+app.post('/upload', upload.array('photos'), (req, res) => {
+    // Use Type Casting to tell TS that 'files' exists here
+    const files = req.files;
+    if (!files || files.length === 0) {
+        return res.status(400).json({ message: "No files uploaded" });
+    }
+    const filePaths = files.map((file) => file.path);
+    res.status(200).json({ paths: filePaths });
 });
 app.listen(PORT, () => {
     console.log(`Ground Link API running on http://localhost:${PORT}`);

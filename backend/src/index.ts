@@ -1,24 +1,23 @@
 import 'dotenv/config';
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
-import {upload} from './multerConfig.js';
+import { put, del } from '@vercel/blob'; // Added 'del' for deleting blobs
+import multer from 'multer';
 import Property, { IProperty } from './models/Property.js';
 import authRouter from './routes/auth.js';
 import { authenticate, authorizeAdmin } from './middleware/auth.js';
-import fs from 'fs/promises';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app: Express = express();
 const PORT = process.env.PORT || 4000;
 
+// Use Memory Storage for Vercel compatibility
+const upload = multer({ storage: multer.memoryStorage() });
+
 // Middleware
 app.use(cors({
-  origin: (origin : string | undefined, callback : (err: Error | null, allow?: boolean) => void) => {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     const allowed = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
     if (!origin || allowed.includes(origin)) {
       callback(null, true);
@@ -30,9 +29,6 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Serve uploaded images
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI!)
   .then(() => console.log('→ MongoDB connected'))
@@ -42,6 +38,17 @@ mongoose.connect(process.env.MONGO_URI!)
   });
 
 app.use('/api/auth', authRouter);
+
+// --- HELPER FUNCTION FOR VERCEL BLOB UPLOAD ---
+const uploadToBlob = async (files: Express.Multer.File[]) => {
+  const uploadPromises = files.map(file => 
+    put(`properties/${Date.now()}-${file.originalname}`, file.buffer, {
+      access: 'public',
+    })
+  );
+  const results = await Promise.all(uploadPromises);
+  return results.map(result => result.url); // Returns array of permanent URLs
+};
 
 // GET all properties (public)
 app.get('/api/properties', async (req: Request, res: Response) => {
@@ -53,7 +60,7 @@ app.get('/api/properties', async (req: Request, res: Response) => {
   }
 });
 
-// GET single property (public)
+// GET single property by ID (public)
 app.get('/api/properties/:id', async (req: Request, res: Response) => {
   try {
     const property = await Property.findById(req.params.id).lean();
@@ -73,31 +80,26 @@ app.post('/api/properties', authenticate, authorizeAdmin, upload.array('images',
       agentName, agentPhone, agentEmail
     } = req.body;
 
-    if (!title || !price || !type) {
-      return res.status(400).json({ error: 'title, price and type are required' });
-    }
-
     const propertyData: Partial<IProperty> = {
-      title: title.trim(),
-      description: description?.trim() || undefined,
+      title: title?.trim(),
+      description: description?.trim(),
       price: Number(price),
-      type: type.toLowerCase().trim(),
+      type: type?.toLowerCase().trim(),
       featured: featured === 'true' || featured === true,
       location: location?.trim() || 'Honiara',
       images: []
     };
 
-    // Handle multiple images
-    if (req.files && Array.isArray(req.files)) {
-      propertyData.images = req.files.map(file => `/uploads/${file.filename}`);
+    // Handle Vercel Blob Uploads
+    const files = req.files as Express.Multer.File[];
+    if (files && files.length > 0) {
+      propertyData.images = await uploadToBlob(files);
     }
 
-    // Additional fields
+    // Additional fields mapping...
     if (province) propertyData.province = province.trim();
     if (address) propertyData.address = address.trim();
-    if (lat && lng) {
-      propertyData.coordinates = { lat: Number(lat), lng: Number(lng) };
-    }
+    if (lat && lng) propertyData.coordinates = { lat: Number(lat), lng: Number(lng) };
     if (bedrooms) propertyData.bedrooms = Number(bedrooms);
     if (bathrooms) propertyData.bathrooms = Number(bathrooms);
     if (landArea) propertyData.landArea = Number(landArea);
@@ -105,20 +107,18 @@ app.post('/api/properties', authenticate, authorizeAdmin, upload.array('images',
     if (status) propertyData.status = status.toLowerCase().trim();
     if (yearBuilt) propertyData.yearBuilt = Number(yearBuilt);
     if (features) {
-      propertyData.features = features.split(',').map((f: string) => f.trim()).filter(Boolean);
+      propertyData.features = typeof features === 'string' ? features.split(',').map((f: string) => f.trim()).filter(Boolean) : features;
     }
     if (videoUrl) propertyData.videoUrl = videoUrl.trim();
-    if (agentName || agentPhone || agentEmail) {
-      propertyData.agent = {
-        name: agentName?.trim() || '',
-        phone: agentPhone?.trim() || '',
-        email: agentEmail?.trim() || '',
-      };
-    }
+    
+    propertyData.agent = {
+      name: agentName?.trim() || '',
+      phone: agentPhone?.trim() || '',
+      email: agentEmail?.trim() || '',
+    };
 
     const newProperty = new Property(propertyData);
     await newProperty.save();
-
     res.status(201).json(newProperty);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -128,66 +128,31 @@ app.post('/api/properties', authenticate, authorizeAdmin, upload.array('images',
 // PUT update property (protected)
 app.put('/api/properties/:id', authenticate, authorizeAdmin, upload.array('images', 10), async (req: Request, res: Response) => {
   try {
-    const {
-      title, description, price, type, featured, location, province, address, lat, lng,
-      bedrooms, bathrooms, landArea, buildingArea, status, yearBuilt, features, videoUrl,
-      agentName, agentPhone, agentEmail, deletedImages
-    } = req.body;
-
     const property = await Property.findById(req.params.id);
     if (!property) return res.status(404).json({ error: 'Property not found' });
 
-    if (title !== undefined) property.title = title.trim();
-    if (description !== undefined) property.description = description.trim() || undefined;
-    if (price !== undefined) property.price = Number(price);
-    if (type !== undefined) property.type = type.toLowerCase().trim();
-    if (featured !== undefined) property.featured = featured === 'true' || featured === true;
-    if (location !== undefined) property.location = location.trim() || 'Honiara';
+    const { deletedImages, ...updates } = req.body;
 
-    // Handle additional images
-    if (req.files && Array.isArray(req.files)) {
-      const newImages = req.files.map(file => `/uploads/${file.filename}`);
-      property.images = [...(property.images || []), ...newImages];
-    }
-
-    // Additional fields
-    if (province !== undefined) property.province = province.trim();
-    if (address !== undefined) property.address = address.trim();
-    if (lat !== undefined && lng !== undefined) {
-      property.coordinates = { lat: Number(lat), lng: Number(lng) };
-    }
-    if (bedrooms !== undefined) property.bedrooms = Number(bedrooms);
-    if (bathrooms !== undefined) property.bathrooms = Number(bathrooms);
-    if (landArea !== undefined) property.landArea = Number(landArea);
-    if (buildingArea !== undefined) property.buildingArea = Number(buildingArea);
-    if (status !== undefined) property.status = status.toLowerCase().trim();
-    if (yearBuilt !== undefined) property.yearBuilt = Number(yearBuilt);
-    if (features !== undefined) {
-      property.features = features.split(',').map((f: string) => f.trim()).filter(Boolean);
-    }
-    if (videoUrl !== undefined) property.videoUrl = videoUrl.trim();
-    if (agentName !== undefined || agentPhone !== undefined || agentEmail !== undefined) {
-      property.agent = {
-        name: agentName?.trim() || property.agent?.name || '',
-        phone: agentPhone?.trim() || property.agent?.phone || '',
-        email: agentEmail?.trim() || property.agent?.email || '',
-      };
-    }
-
-    // Handle image deletions
+    // 1. Handle image deletions from Vercel Blob
     if (deletedImages) {
-      const imagesToDelete = deletedImages.split(',').map((img: string) => img.trim());
-
-      for (const imgPath of imagesToDelete) {
-        // Remove from array
-        property.images = property.images?.filter(img => img !== imgPath) || [];
-
-        // Delete file from disk
-        const fullPath = path.join(__dirname, '../', imgPath);
-        await fs.unlink(fullPath).catch(err => console.warn('Failed to delete image:', err));
+      const urlsToDelete = deletedImages.split(',').map((url: string) => url.trim());
+      for (const url of urlsToDelete) {
+        await del(url).catch(err => console.warn('Failed to delete blob:', err));
+        property.images = property.images?.filter(img => img !== url) || [];
       }
     }
 
+    // 2. Handle new uploads to Vercel Blob
+    const files = req.files as Express.Multer.File[];
+    if (files && files.length > 0) {
+      const newImageUrls = await uploadToBlob(files);
+      property.images = [...(property.images || []), ...newImageUrls];
+    }
+
+    // 3. Update other fields
+    Object.assign(property, updates); 
+    // Note: ensure price/lat/lng/rooms are cast to Numbers if provided in updates
+    
     const updatedProperty = await property.save();
     res.status(200).json(updatedProperty);
   } catch (err: any) {
@@ -198,41 +163,23 @@ app.put('/api/properties/:id', authenticate, authorizeAdmin, upload.array('image
 // DELETE property (protected)
 app.delete('/api/properties/:id', authenticate, authorizeAdmin, async (req: Request, res: Response) => {
   try {
-    const property = await Property.findByIdAndDelete(req.params.id);
+    const property = await Property.findById(req.params.id);
+    if (!property) return res.status(404).json({ error: 'Property not found' });
 
-    if (!property) {
-      return res.status(404).json({ error: 'Property not found' });
+    // Delete all associated images from Vercel Blob
+    if (property.images && property.images.length > 0) {
+      for (const url of property.images) {
+        await del(url).catch(err => console.warn('Blob delete failed:', err));
+      }
     }
 
-    if (property.image) {
-      const imagePath = path.join(__dirname, '..', property.image);
-      import('fs/promises')
-        .then(fs => fs.unlink(imagePath))
-        .catch(err => console.warn('Could not delete old image file:', err.message));
-    }
-
-    res.status(200).json({
-      message: 'Property deleted successfully',
-      deletedId: req.params.id
-    });
+    await Property.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: 'Property and images deleted successfully' });
   } catch (err: any) {
-    console.error('Delete error:', err);
-    res.status(500).json({ error: err.message || 'Server error during deletion' });
+    res.status(500).json({ error: err.message });
   }
-});
-
-app.post('/upload', upload.array('photos'), (req: Request, res: Response) => {
-  // Use Type Casting to tell TS that 'files' exists here
-  const files = req.files as Express.Multer.File[];
-
-  if (!files || files.length === 0) {
-    return res.status(400).json({ message: "No files uploaded" });
-  }
-
-  const filePaths = files.map((file: Express.Multer.File) => file.path);
-  res.status(200).json({ paths: filePaths });
 });
 
 app.listen(PORT, () => {
-  console.log(`Ground Link API running on http://localhost:${PORT}`);
+  console.log(`Ground Link API running on port ${PORT}`);
 });

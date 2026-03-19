@@ -165,14 +165,13 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-slate-950 text-slate-400 py-20 px-6">
-        <div className="container mx-auto max-w-7xl text-center">
-          <span className="text-2xl font-black tracking-tighter text-white mb-8 block">GROUNDLINK</span>
-          <p className="max-w-md mx-auto mb-10 text-lg font-light">Built for the Solomon Islands, by the Solomon Islands.</p>
-          <div className="pt-10 border-t border-slate-900 text-[10px] font-bold uppercase tracking-widest">
-            © {new Date().getFullYear()} Ground Link Ltd. Honiara
-          </div>
+      {/* Minimal Footer */}
+      <footer className="bg-white py-12 px-6 border-t border-slate-100 mt-auto">
+        <div className="container mx-auto max-w-5xl text-center">
+          <p className="text-lg font-bold text-slate-900 tracking-tight mb-2">Ground Link</p>
+          <p className="text-sm font-medium text-slate-500">
+            © {new Date().getFullYear()} Ground Link. All rights reserved. • Honiara, Solomon Islands
+          </p>
         </div>
       </footer>
     </div>

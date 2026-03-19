@@ -1,5 +1,10 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
+export function getImageUrl(path: string | undefined): string {
+  if (!path) return '/placeholder-property.jpg';
+  if (path.startsWith('http')) return path;
+  return `${API_BASE}${path}`;
+}
 
 export interface Property {
   _id: string;
@@ -36,7 +41,9 @@ export interface Property {
 }
 // Authentication
 export async function loginAdmin(credentials: any) {
-  const res = await fetch(`${API_BASE}/api/auth/login`, {
+
+  const url = `${API_BASE}/api/auth/login`;
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include', 
@@ -44,6 +51,7 @@ export async function loginAdmin(credentials: any) {
   });
   if (!res.ok) {
     const data = await res.json();
+    console.error("BACKEND RESPONDED WITH ERROR:", res.status);
     throw new Error(data.error || 'Login failed');
   }
   return res.json();
@@ -56,8 +64,13 @@ export async function fetchProperties(): Promise<Property[]> {
 }
 
 export async function fetchProperty(id: string): Promise<Property> {
+  
   const res = await fetch(`${API_BASE}/api/properties/${id}`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch property');
+  if (!res.ok){
+    console.error(`Failed to fetch property with id ${id}. Status: ${res.status}`);
+   throw new Error('Failed to fetch property');
+    
+  }
   return res.json();
 }
 

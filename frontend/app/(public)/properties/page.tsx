@@ -1,7 +1,6 @@
 import { fetchProperties, Property } from '@/lib/api';
 import PropertyCard from '@/components/PropertyCard';
-import Header from '@/components/Header';
-import { Badge } from '@/components/ui/badge';
+import Navbar from '@/components/Navbar';
 import HeroSearch from '@/components/HeroSearch';
 
 export default async function PropertiesListingPage({
@@ -48,61 +47,49 @@ export default async function PropertiesListingPage({
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
+    <div className="flex flex-col min-h-screen bg-slate-50 selection:bg-primary/20">
+      <Navbar />
 
-      {/* 1. Header Section with Image and Industrial Fade Overlay */}
-      <section className="relative pt-40 pb-24 overflow-hidden bg-black">
-        {/* The Background Image - Using a broad architectural shot */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop" 
-            alt="Real Estate Portfolio background"
-            className="w-full h-full object-cover grayscale opacity-90 brightness-75"
-          />
-        </div>
-
-        {/* The "Industrial Fade" Gradient Overlay */}
-        <div className="absolute inset-0 z-10 bg-linear-to-b from-black via-black/80 to-background opacity-70" />
-        
-        <div className="container mx-auto max-w-7xl px-6 relative z-20 text-center">
-          <Badge className="bg-primary text-white rounded-md px-3 py-1 mb-6 border-none uppercase text-[10px] tracking-widest animate-in fade-in slide-in-from-top-4 duration-1000">
-            Full Portfolio
-          </Badge>
-          <h1 className="text-5xl md:text-7xl  font-bold mb-6 text-white  drop-shadow-2xl">
-            Prime <span className="text-primary">Listings</span><span className="text-white">.</span>
+      {/* Clean Top Area for Search */}
+      <section className="pt-32 pb-12 px-6 bg-white border-b border-slate-100">
+        <div className="container mx-auto max-w-7xl">
+          <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter mb-8">
+            Explore Properties
           </h1>
-          <p className="text-xl text-slate-300 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-lg">
-            Explore our curated selection of premium real estate across the Solomon Islands.
-          </p>
+          <HeroSearch initialValues={initialValues} /> 
         </div>
       </section>
 
-      {/* 2. Filter Bar prefilled with URL params */}
-      <section className="relative z-30 -mt-12 container mx-auto px-6 max-w-7xl">
-         <HeroSearch initialValues={initialValues} /> 
-      </section>
-
-      <main className="container mx-auto max-w-7xl px-6 py-16 relative z-20">
-        <div className="flex justify-between items-center mb-8 border-b border-slate-100 pb-4">
+      <main className="container mx-auto max-w-7xl px-6 py-12 relative z-20 flex-grow">
+        <div className="flex justify-between items-center mb-8">
           <p className="text-sm font-bold uppercase tracking-widest text-slate-500">
             Showing <span className="text-black">{filteredProperties.length}</span> luxury listings
           </p>
         </div>
 
         {filteredProperties.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredProperties.map((prop) => (
               <PropertyCard key={prop._id} property={prop} />
             ))}
           </div>
         ) : (
-          <div className="py-24 text-center border-2 border-slate-100 rounded-lg bg-slate-50">
-            <h3 className="text-xl font-black uppercase italic">No matches found</h3>
-            <p className="text-slate-500 mt-2">Try adjusting your filters to find your perfect property.</p>
+          <div className="py-32 text-center border border-slate-200 border-dashed rounded-[3rem] bg-white">
+            <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-2">No matches found</h3>
+            <p className="text-slate-500 font-medium max-w-md mx-auto">Try adjusting your budget or searching a different location to find what you're looking for.</p>
           </div>
         )}
       </main>
+      
+      {/* Minimal Footer */}
+      <footer className="bg-white py-12 px-6 border-t border-slate-100 mt-auto">
+        <div className="container mx-auto max-w-5xl text-center">
+          <p className="text-lg font-bold text-slate-900 tracking-tight mb-2">Ground Link</p>
+          <p className="text-sm font-medium text-slate-500">
+            © {new Date().getFullYear()} Ground Link. All rights reserved. • Honiara, Solomon Islands
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
