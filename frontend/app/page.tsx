@@ -42,7 +42,7 @@ export default async function LandingPage() {
             <span className="text-transparent bg-clip-text bg-linear-to-r from-white to-white/70"><span className='text-red-600'>perfect</span> place.</span>
           </h1>
 
-          <p className="text-lg md:text-2xl text-white/90 max-w-2xl mx-auto mb-16 font-medium drop-shadow-lg">
+          <p className="text-lg md:text-2xl text-white/90 max-w-2xl mx-auto mb-8 md:mb-16 font-medium drop-shadow-lg">
             Discover premium properties, exclusive lands, and beautiful homes in the Hapi Isles.
           </p>
 
