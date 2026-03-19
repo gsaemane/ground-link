@@ -1,0 +1,106 @@
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\(public)\about\page.tsx
+    2:10  warning  'Card' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+    2:16  warning  'CardContent' is defined but never used                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   52:14  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  100:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  105:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  126:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\(public)\contact\page.tsx
+   30:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+   42:28  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+  179:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\(public)\properties\[id]\page.tsx
+    3:25  warning  'Property' is defined but never used                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  118:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  129:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  260:93  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\(public)\properties\page.tsx
+  79:148  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\(public)\types\[type]\page.tsx
+  59:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\admin\hero-slides\page.tsx
+  178:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\admin\layout.tsx
+  5:10  warning  'Toaster' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\admin\page.tsx
+  50:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\admin\properties\[id]\edit\page.tsx
+   84:16  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+  145:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\admin\properties\[id]\page.tsx
+  39:21  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  68:9   warning  'mainImage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\admin\properties\all\page.tsx
+  38:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  63:14  warning  'err' is defined but never used           @typescript-eslint/no-unused-vars
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\admin\properties\new\page.tsx
+  84:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\admin\settings\page.tsx
+   75:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+  100:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+  124:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\login\page.tsx
+  41:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\gsaemane\projects\ground-link\frontend\app\page.tsx
+   4:10  warning  'Badge' is defined but never used         @typescript-eslint/no-unused-vars
+  13:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\gsaemane\projects\ground-link\frontend\components\Header.tsx
+  6:24  warning  'UserIcon' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\gsaemane\projects\ground-link\frontend\components\HeroSearch.tsx
+  6:18  warning  'Home' is defined but never used         @typescript-eslint/no-unused-vars
+  6:24  warning  'MapPin' is defined but never used       @typescript-eslint/no-unused-vars
+  6:32  warning  'DollarSign' is defined but never used   @typescript-eslint/no-unused-vars
+  6:44  warning  'ChevronDown' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\gsaemane\projects\ground-link\frontend\components\HeroSlider.tsx
+   4:10  warning  'Badge' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  37:9   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  57:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\gsaemane\projects\ground-link\frontend\components\PropertyCard.tsx
+   3:10  warning  'Button' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   4:10  warning  'MapPin' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  21:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\gsaemane\projects\ground-link\frontend\components\PropertyMap.tsx
+  3:10  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\gsaemane\projects\ground-link\frontend\components\ShareButton.tsx
+  5:10  warning  'toast' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\gsaemane\projects\ground-link\frontend\components\ui\sidebar.tsx
+  611:26  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\gsaemane\projects\ground-link\frontend\components\ui\sidebar.tsx:611:26
+  609 |   // Random width between 50 to 90%.
+  610 |   const width = React.useMemo(() => {
+> 611 |     return `${Math.floor(Math.random() * 40) + 50}%`
+      |                          ^^^^^^^^^^^^^ Cannot call impure function
+  612 |   }, [])
+  613 |
+  614 |   return (  react-hooks/purity
+
+C:\Users\gsaemane\projects\ground-link\frontend\lib\api.ts
+  43:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 46 problems (11 errors, 35 warnings)
+

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { MapPin, Menu, UserIcon, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 
 export default function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -86,6 +86,7 @@ export default function Header() {
                             </Button>
                         </SheetTrigger>
                         <SheetContent side="right" className="w-full sm:w-96 p-0 sm:p-6 bg-white/95 backdrop-blur-xl border-none">
+                            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                             <div className="p-6 h-full flex flex-col">
                                 <div className="flex flex-col gap-6 mt-12">
                                     {navLinks.map((link) => (
