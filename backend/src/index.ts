@@ -43,7 +43,7 @@ app.use('/api/hero-slides', heroSlideRouter);
 
 // --- HELPER FUNCTION FOR VERCEL BLOB UPLOAD ---
 const uploadToBlob = async (files: Express.Multer.File[]) => {
-  const uploadPromises = files.map(file => 
+  const uploadPromises = files.map(file =>
     put(`properties/${Date.now()}-${file.originalname}`, file.buffer, {
       access: 'public',
     })
@@ -112,7 +112,7 @@ app.post('/api/properties', authenticate, authorizeAdmin, upload.array('images',
       propertyData.features = typeof features === 'string' ? features.split(',').map((f: string) => f.trim()).filter(Boolean) : features;
     }
     if (videoUrl) propertyData.videoUrl = videoUrl.trim();
-    
+
     propertyData.agent = {
       name: agentName?.trim() || '',
       phone: agentPhone?.trim() || '',
@@ -152,9 +152,9 @@ app.put('/api/properties/:id', authenticate, authorizeAdmin, upload.array('image
     }
 
     // 3. Update other fields
-    Object.assign(property, updates); 
+    Object.assign(property, updates);
     // Note: ensure price/lat/lng/rooms are cast to Numbers if provided in updates
-    
+
     const updatedProperty = await property.save();
     res.status(200).json(updatedProperty);
   } catch (err: any) {
@@ -182,6 +182,11 @@ app.delete('/api/properties/:id', authenticate, authorizeAdmin, async (req: Requ
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Ground Link API running on port ${PORT}`);
-});
+
+export default app;
+
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Ground Link API running on port ${PORT}`);
+  });
+}
